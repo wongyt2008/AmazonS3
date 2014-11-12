@@ -1,0 +1,40 @@
+This is for the testing of photo 
+
+- (IBAction)uploadButtonPressed:(id)sender{
+
+AWSS3TransferManager *transferManager = [AWSS3TransferManager defaultS3TransferManager];
+    
+    
+    self.testFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory()
+                                               stringByAppendingPathComponent:@"temp"]];
+                        
+    self.uploadRequest = [AWSS3TransferManagerUploadRequest new];
+ 
+    NSData *data = UIImageJPEGRepresentation(self.image.image, 0.5);
+    
+    
+    data = [NSData dataWithContentsOfURL:self.testFileURL];
+    
+    self.uploadRequest.bucket = S3BucketName;
+    
+    self.uploadRequest.key = @"bingo";
+    
+    
+    self.uploadRequest.body = self.testFileURL;
+    
+    [[transferManager upload:self.uploadRequest] continueWithExecutor:[BFExecutor mainThreadExecutor] withBlock:^id(BFTask *task) {
+        if (task.error != nil) {
+            
+            {
+                self.uploadStatusLabel.text = @"StatusLabelFailed";
+            }
+        } else {
+            self.uploadRequest = nil;
+           
+                self.uploadStatusLabel.text = @"StatusLabelCompleted";
+            }
+        
+        return nil;
+    }];
+
+     }
